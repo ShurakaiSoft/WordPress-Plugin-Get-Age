@@ -9,36 +9,24 @@ Author URI: http://yp.id.au/coder/
 License: GPLv2 or later
 */
 
-
 /**
- * helper function to get date from short code parameters
- * @param unknown $atts
+ * 
+ * @param unknown $interval
+ * @return string formatted result.
  */
-function sjp_ga_getInterval($atts) {
-	extract( shortcode_atts( array(
-		'year' => '2000',
-		'month' => '1',
-		'day' => '1',
-	), $atts ) );
-	return date_diff(new DateTime(), new DateTime($year . '-' . $month . '-' . $day));
-}
-
-function sjp_ga_get_age($atts) {
-	
-	$interval = sjp_ga_getInterval($atts);
+function sjp_ga_format($interval) {
 	$year = $interval->format("%Y");
-	$month = $interval->format("%m");
-	$day = $interval->format("%d");
-
 	if ($year >= 2) {
 		return $year . ' years';
 	}
+	$month = $interval->format("%m");
 	if ($year == 1) {
 		$month += 12;
 	}
 	if ($month >= 2) {
 		return $month . ' months';
 	}
+	$day = $interval->format("%d");
 	if ($month == 1 && $day <= 6) {
 		return '1 month';
 	}
@@ -55,4 +43,22 @@ function sjp_ga_get_age($atts) {
 	return '1 day';
 }
 
-add_shortcode( 'get_age', 'sjp_ga_get_age' );
+
+/**
+ * callback for shortcode "get-age".
+ *  
+ * @param unknown $atts
+ * @return string
+ */
+function sjp_ga_get_age($atts) {
+	extract( shortcode_atts( array(
+	'year' => '2000',
+	'month' => '1',
+	'day' => '1',
+	), $atts ) );
+	$interval = date_diff(new DateTime(), new DateTime($year . '-' . $month . '-' . $day));
+	
+	return sjp_ga_format($interval);	
+}
+
+add_shortcode( 'get-age', 'sjp_ga_get_age' );
